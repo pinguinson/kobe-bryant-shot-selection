@@ -3,32 +3,42 @@ from time import time
 import pandas as pd
 import numpy as np
 
+
 def get_type(data, threshold):
     total_actions = dict(data.action_type.value_counts())
-    data['type'] = data.apply(lambda row: row['action_type'] if total_actions[row['action_type']] >= threshold else row['combined_shot_type'], axis=1)
+    data['type'] = data.apply(
+        lambda row: row['action_type'] if total_actions[row['action_type']] >= threshold else row['combined_shot_type'],
+        axis=1)
     return
+
 
 def get_time_remaining(data, threshold):
     data['time_remaining'] = data.apply(lambda row: row['minutes_remaining'] * 60 + row['seconds_remaining'], axis=1)
     anomaly = 14
-    data['last_moment'] = data.apply(lambda row: row['time_remaining'] < threshold or row['time_remaining'] == anomaly, axis=1)
+    data['last_moment'] = data.apply(lambda row: row['time_remaining'] < threshold or row['time_remaining'] == anomaly,
+                                     axis=1)
     return
+
 
 def get_away(data):
     data['away'] = data.matchup.str.contains('@')
     return
 
+
 def get_season(data):
     data['season'] = data.apply(lambda row: int(row['season'].split('-')[0]), axis=1)
     return
+
 
 def get_month(data):
     data['month'] = data.apply(lambda row: int(row['game_date'].split('-')[1]), axis=1)
     return
 
+
 def fix_shot_distance(data):
     data['shot_distance'] = data.apply(lambda row: 28 if row['shot_distance'] > 28 else row['shot_distance'], axis=1)
     return
+
 
 def load_data(path):
     # load data
@@ -45,25 +55,24 @@ def load_data(path):
         'shot_distance',
         'last_moment',
         'away',
-        'loc_x',
-        'loc_y'
     ]
 
     binarized = [
-        'type',
         'period',
         'shot_zone_area',
         'shot_zone_basic',
         'shot_zone_range',
         'opponent',
         'season',
+        'action_type',
+        'combined_shot_type'
     ]
 
     dummie_counter = {}
     for feature in binarized:
         dummie_counter[feature] = len(data[feature].unique())
-        
-    #data = pd.concat([data[binarized], pd.get_dummies(data, columns=binarized)], axis=1)
+
+    # data = pd.concat([data[binarized], pd.get_dummies(data, columns=binarized)], axis=1)
     data = pd.get_dummies(data, columns=binarized)
 
     for col in data.columns.tolist():
