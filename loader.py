@@ -40,7 +40,7 @@ def fix_shot_distance(data):
     return
 
 
-def load_data(path):
+def load_data(path, small=False, part=10):
     # load data
     data = pd.read_csv(path)
 
@@ -90,7 +90,23 @@ def load_data(path):
     new_columns.append(target)
     data = data[new_columns]
     train_data = data[~data[target].isnull()]
+    if small:
+        train_data = train_data[::part]
     test_data = data[data[target].isnull()]
     test_data.drop(target, axis=1, inplace=True)
 
     return train_data, test_data, features, target
+
+
+def load_meta(path_train, path_test):
+    train = pd.read_csv(path_train)
+    test = pd.read_csv(path_test)
+    return train, test
+
+
+def make_submission(predictions, ids, file_name):
+    with open(file_name, 'w') as f:
+        f.write('shot_id,shot_made_flag\n')
+        for i, prob in zip(ids, predictions):
+            f.write(str(i) + ',' + str(prob) + '\n')
+    print('Wrote submission to file {}.'.format(file_name))
