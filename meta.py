@@ -1,26 +1,18 @@
 from time import time
 
-import pandas as pd
 import numpy as np
-
-import seaborn as sns
-import matplotlib.pyplot as plt
-
+import pandas as pd
 import xgboost as xgb
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LinearRegression, LogisticRegression, SGDClassifier
-from sklearn.metrics import log_loss, accuracy_score
-from sklearn.cross_validation import cross_val_score, train_test_split, StratifiedKFold
+from nolearn.lasagne import NeuralNet
+from sklearn.cross_validation import StratifiedKFold
 from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier, GradientBoostingClassifier
-from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn.metrics import log_loss
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 
-from nolearn.lasagne import NeuralNet
-
-from nn_helper import scale_train_data, scale_test_data, make_net
-from loader import load_data, make_submission
+from helper import load_data
+from net import scale_train_data, scale_test_data, make_net
 
 # disable pandas warnings
 pd.options.mode.chained_assignment = None

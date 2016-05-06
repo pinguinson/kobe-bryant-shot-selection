@@ -1,7 +1,7 @@
-from time import time
-
 import pandas as pd
-import numpy as np
+
+SUBMISSION_FOLDER = 'submissions'
+DATA_FOLDER = 'data'
 
 
 def get_type(data, threshold):
@@ -41,8 +41,7 @@ def fix_shot_distance(data):
 
 
 def load_data(path, small=False, part=10):
-    # load data
-    data = pd.read_csv(path)
+    data = pd.read_csv(DATA_FOLDER + '/' + path)
 
     get_type(data, 100)
     get_time_remaining(data, 3)
@@ -57,7 +56,7 @@ def load_data(path, small=False, part=10):
         'away',
     ]
 
-    binarized = [
+    binary_features = [
         'period',
         'shot_zone_area',
         'shot_zone_basic',
@@ -68,15 +67,14 @@ def load_data(path, small=False, part=10):
         'combined_shot_type'
     ]
 
-    dummie_counter = {}
-    for feature in binarized:
-        dummie_counter[feature] = len(data[feature].unique())
+    dummies_counter = {}
+    for feature in binary_features:
+        dummies_counter[feature] = len(data[feature].unique())
 
-    # data = pd.concat([data[binarized], pd.get_dummies(data, columns=binarized)], axis=1)
-    data = pd.get_dummies(data, columns=binarized)
+    data = pd.get_dummies(data, columns=binary_features)
 
     for col in data.columns.tolist():
-        for feature in binarized:
+        for feature in binary_features:
             if col.startswith(feature) and col != feature:
                 features.append(col)
 
@@ -99,13 +97,13 @@ def load_data(path, small=False, part=10):
 
 
 def load_meta(path_train, path_test):
-    train = pd.read_csv(path_train)
-    test = pd.read_csv(path_test)
+    train = pd.read_csv(DATA_FOLDER + '/' + path_train)
+    test = pd.read_csv(DATA_FOLDER + '/' + path_test)
     return train, test
 
 
 def make_submission(predictions, ids, file_name):
-    with open(file_name, 'w') as f:
+    with open(SUBMISSION_FOLDER + '/' + file_name, 'w') as f:
         f.write('shot_id,shot_made_flag\n')
         for i, prob in zip(ids, predictions):
             f.write(str(i) + ',' + str(prob) + '\n')

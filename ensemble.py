@@ -1,13 +1,13 @@
 from nolearn.lasagne import NeuralNet
 
-from loader import load_meta
+from helper import load_meta
 from time import time
 
 import numpy as np
 import xgboost as xgb
 
-from nn_helper import make_net, scale_test_data, scale_train_data
-from loader import make_submission
+from net import make_net, scale_test_data, scale_train_data
+from helper import make_submission
 
 
 def process_clf(clf, train_data, test_data, features, target):
